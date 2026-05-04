@@ -1,0 +1,1 @@
+This module enforces SC-12, SC-13, SC-28, AU-11, and CM-6 for GCS.
