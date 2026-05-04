@@ -1,0 +1,157 @@
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": {
+            "ac3": {
+              "deny": [
+                "[AC-3] google_storage_bucket.bad_no_labels: bucket allows public access.",
+                "[AC-3] google_storage_bucket.bad_public: bucket allows public access."
+              ]
+            },
+            "ac3_test": {
+              "compliant_bucket": {
+                "planned_values": {
+                  "root_module": {
+                    "resources": [
+                      {
+                        "address": "google_storage_bucket.good",
+                        "type": "google_storage_bucket",
+                        "values": {
+                          "public_access_prevention": "enforced",
+                          "uniform_bucket_level_access": true
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "public_bucket": {
+                "planned_values": {
+                  "root_module": {
+                    "resources": [
+                      {
+                        "address": "google_storage_bucket.bad",
+                        "type": "google_storage_bucket",
+                        "values": {
+                          "public_access_prevention": "inherited",
+                          "uniform_bucket_level_access": false
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "test_compliant_bucket_passes": true,
+              "test_public_bucket_fails": true
+            },
+            "cm6": {
+              "deny": [
+                "[CM-6] google_storage_bucket.bad_no_labels: missing labels {\"compliance_scope\", \"environment\", \"managed_by\", \"project\"}.",
+                "[CM-6] google_storage_bucket.bad_public: missing labels {\"compliance_scope\", \"environment\", \"managed_by\", \"project\"}."
+              ],
+              "required": [
+                "compliance_scope",
+                "environment",
+                "managed_by",
+                "project"
+              ]
+            },
+            "cm6_test": {
+              "complete": {
+                "planned_values": {
+                  "root_module": {
+                    "resources": [
+                      {
+                        "address": "google_storage_bucket.good",
+                        "type": "google_storage_bucket",
+                        "values": {
+                          "labels": {
+                            "compliance_scope": "cge-p-lab",
+                            "environment": "dev",
+                            "managed_by": "terraform",
+                            "project": "x"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "missing": {
+                "planned_values": {
+                  "root_module": {
+                    "resources": [
+                      {
+                        "address": "google_storage_bucket.bad",
+                        "type": "google_storage_bucket",
+                        "values": {
+                          "labels": {
+                            "project": "x"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "test_complete_passes": true,
+              "test_partial_fails": true
+            },
+            "sc28": {
+              "deny": [
+                "[SC-28] google_storage_bucket.bad_no_cmek: missing customer-managed encryption key.",
+                "[SC-28] google_storage_bucket.bad_no_labels: missing customer-managed encryption key.",
+                "[SC-28] google_storage_bucket.bad_public: missing customer-managed encryption key."
+              ]
+            },
+            "sc28_test": {
+              "compliant_input": {
+                "planned_values": {
+                  "root_module": {
+                    "resources": [
+                      {
+                        "address": "google_storage_bucket.good",
+                        "type": "google_storage_bucket",
+                        "values": {
+                          "encryption": [
+                            {
+                              "default_kms_key_name": "key1"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "noncompliant_input": {
+                "planned_values": {
+                  "root_module": {
+                    "resources": [
+                      {
+                        "address": "google_storage_bucket.bad",
+                        "type": "google_storage_bucket",
+                        "values": {
+                          "encryption": []
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "test_compliant_passes": true,
+              "test_noncompliant_fails": true
+            }
+          },
+          "text": "data.compliance",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}
