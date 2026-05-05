@@ -10,3 +10,6 @@ This repository contains machine-readable compliance evidence and Infrastructure
 * `/modules`: Reusable compliant infrastructure blueprints.
 * `/primitives`: Single-resource deployments.
 * `/evidence`: JSON-formatted system-generated evidence (SGE) for audit verification.
+
+* **Lab 3.3 (GCP):** Policy-as-Code Library (NIST 800-53 Mapping).
+* **Lab 3.4 (Multi-Cloud):** Automated Compliance Gate with Conftest.

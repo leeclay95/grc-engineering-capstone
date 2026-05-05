@@ -1,0 +1,38 @@
+[
+[
+	{
+		"filename": "./lab-3-4-broken/plan.json",
+		"namespace": "compliance.sc28_aws",
+		"successes": 0,
+		"failures": [
+			{
+				"msg": "[SC-28] aws_s3_bucket.vault: missing encryption configuration.",
+				"metadata": {
+					"query": "data.compliance.sc28_aws.deny"
+				}
+			}
+		]
+	}
+]
+,[
+	{
+		"filename": "./lab-3-4-broken/plan.json",
+		"namespace": "compliance.ac3_aws",
+		"successes": 1
+	}
+]
+,[
+	{
+		"filename": "./lab-3-4-broken/plan.json",
+		"namespace": "compliance.cm6_aws",
+		"successes": 1
+	}
+]
+,[
+	{
+		"filename": "./lab-3-4-broken/plan.json",
+		"namespace": "compliance.cm6",
+		"successes": 1
+	}
+]
+]
