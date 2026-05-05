@@ -28,6 +28,15 @@ This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant inf
 * **`/evidence`**: Machine-readable JSON evidence (SGE) used for automated audit verification.
 
 ### Phase 4: CI/CD Enforcement & Evidence
+
+* **Lab 4.4: Evidence Chain of Custody**
+
+* **Cryptographic** Signing: Integrated Cosign to sign audit bundles using keyless OIDC identities.
+
+* **Immutable Storage:** Automated the off-boarding of signed evidence to an AWS S3 Vault with Object Lock (WORM) enabled.
+
+* **Non-Repudiation:** Established a verification process that proves the "who, what, and when" of every infrastructure change without requiring an administrative password.
+
 * **Lab 4.3 (AWS + GitHub Actions):** Automated NIST 800-53 enforcement using a "Fail-Closed" CI/CD pipeline.
     * **OIDC Integration:** Established passwordless trust between GitHub and AWS for secure, secretless authentication.
     * **Automated Gates:** Wired `Conftest` and `tfsec` to scan every Pull Request, blocking non-compliant code from merging.
