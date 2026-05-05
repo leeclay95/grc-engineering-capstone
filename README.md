@@ -2,7 +2,7 @@
 
 This repository demonstrates **Continuous Compliance** and **Automated Governance** across a multi-cloud environment (AWS & GCP). It implements a "Fail-Closed" security model using Infrastructure-as-Code (IaC) and Policy-as-Code (PaC).
 
-## 🛡️ Compliance Framework: NIST 800-53
+##  Compliance Framework: NIST 800-53
 All resources and policies in this repository are mapped to specific NIST 800-53 security controls to ensure audit readiness.
 
 * **SC-28 (Protection of Information at Rest):** Mandates Customer-Managed Encryption Keys (CMEK) and SSE-KMS.
@@ -12,7 +12,7 @@ All resources and policies in this repository are mapped to specific NIST 800-53
 
 
 
-## 🚀 Automated Governance (The Security Loop)
+##  Automated Governance (The Security Loop)
 This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant infrastructure from ever reaching the cloud.
 
 1. **Plan:** Terraform generates a binary execution plan.
@@ -27,7 +27,14 @@ This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant inf
 * **`/modules`**: Reusable, "Compliant-by-Default" infrastructure blueprints.
 * **`/evidence`**: Machine-readable JSON evidence (SGE) used for automated audit verification.
 
+### Phase 4: CI/CD Enforcement & Evidence
+* **Lab 4.3 (AWS + GitHub Actions):** Automated NIST 800-53 enforcement using a "Fail-Closed" CI/CD pipeline.
+    * **OIDC Integration:** Established passwordless trust between GitHub and AWS for secure, secretless authentication.
+    * **Automated Gates:** Wired `Conftest` and `tfsec` to scan every Pull Request, blocking non-compliant code from merging.
+    * **Exception Registry:** Implemented `.tfsec/config.yml` to centralize and document risk acceptance (CM-3).
+    * **Evidence Generation:** Automated the capture of machine-readable audit logs (`sarif`, `json`) as workflow artifacts.
 
+    
 ### Phase 3: Policy-as-Code & Enforcement
 * **Lab 3.4 (Multi-Cloud):** Built a unified automation gate using Conftest to enforce SC-28, AC-3, and CM-6 across both AWS and GCP.
 * **Lab 3.3 (GCP):** Developed a NIST-mapped Rego library for Google Cloud Platform.
