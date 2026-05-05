@@ -1,0 +1,7 @@
+# .tfsec/config.yml
+# Centralized Security Exception Registry
+# This file documents why certain global checks are bypassed for this project.
+
+exclude:
+  - aws-s3-enable-bucket-logging  # Exception: Lab environment uses a single bucket; logging destination not required.
+  - aws-s3-encryption-customer-key # Exception: Lab environment uses AES256; KMS CMEK not required for this scope.
