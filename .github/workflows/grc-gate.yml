@@ -62,44 +62,37 @@ jobs:
           terraform show -json tfplan > plan.json
 
       - name: Conftest policy gate
-        id: conftest
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          mkdir -p ../evidence
-          {
-            echo "["
-            FIRST=1
-            for ns in compliance.sc28_aws compliance.ac3_aws compliance.cm6_aws compliance.cm6 ; do
-              [[ $FIRST -eq 1 ]] && FIRST=0 || printf ","
-              conftest test --policy ../policies --namespace "$ns" --output=json plan.json || true
-            done
-            echo "]"
-          } > ../evidence/conftest-results.json
-          python3 -c '
-          import json, sys
-          d = json.load(open("../evidence/conftest-results.json"))
-          fails = sum(len(r.get("failures") or []) for results in d for r in results)
-          print(f"conftest failures: {fails}")
+          # Use absolute workspace path for everything
+          mkdir -p $GITHUB_WORKSPACE/evidence
+          conftest test plan.json --policy $GITHUB_WORKSPACE/policies --output json > $GITHUB_WORKSPACE/evidence/conftest-results.json || true
+          
+          python3 -c "
+          import json, sys, os
+          path = '$GITHUB_WORKSPACE/evidence/conftest-results.json'
+          if not os.path.exists(path) or os.stat(path).st_size == 0:
+              print('Evidence file missing or empty'); sys.exit(1)
+          d = json.load(open(path))
+          fails = sum(len(r.get('failures') or []) for results in d for r in results)
+          print(f'conftest failures: {fails}')
           sys.exit(0 if fails == 0 else 1)
-          '
+          "
 
       - name: tfsec scan
-        id: tfsec
         if: always()
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          tfsec . --config-file ../.tfsec/config.yml --format sarif --out ../evidence/tfsec.sarif || true
-          python3 -c '
+          # Use absolute workspace path for config and output
+          tfsec . --config-file $GITHUB_WORKSPACE/.tfsec/config.yml --format sarif --out $GITHUB_WORKSPACE/evidence/tfsec.sarif || true
+          
+          python3 -c "
           import json, sys
-          d = json.load(open("../evidence/tfsec.sarif"))
-          high = sum(
-              1 for run in d.get("runs", [])
-              for r in run.get("results", [])
-              if (r.get("level") or "").lower() in ("error","critical","high")
-          )
-          print(f"tfsec high+critical: {high}")
+          d = json.load(open('$GITHUB_WORKSPACE/evidence/tfsec.sarif'))
+          high = sum(1 for run in d.get('runs', []) for r in run.get('results', []) if (r.get('level') or '').lower() in ('error','critical','high'))
+          print(f'tfsec high+critical: {high}')
           sys.exit(0 if high == 0 else 1)
-          '
+          "
 
       - name: Copy plan into evidence
         if: always()
