@@ -11,15 +11,26 @@ permissions:
   contents: read
   pull-requests: write  # required to comment on the PR
 
-env:
-  AWS_REGION: us-east-1
-  TF_WORKING_DIR: lab-3-4
+
 
 jobs:
   grc-gate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to see the difference between branches
+
+      - name: Detect Changes & Set Working Dir
+        id: context
+        run: |
+          # 1. Identify which directory changed (.tf files)
+          # This finds the directory of the first modified .tf file
+          CHANGED_DIR=$(git diff --name-only origin/main...HEAD | grep '\.tf$' | head -n 1 | xargs -I {} dirname {} || echo ".")
+          
+          # 2. Set it for the rest of the job
+          echo "TF_WORKING_DIR=$CHANGED_DIR" >> $GITHUB_ENV
+          echo "Scanning Lab Directory: $CHANGED_DIR"
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -110,7 +121,7 @@ jobs:
           name: grc-evidence-${{ github.run_id }}
           path: evidence/
           retention-days: 90
-          
+
       - name: Bundle + sign + upload to vault
         id: sign
         if: always()
