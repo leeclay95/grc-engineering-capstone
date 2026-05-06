@@ -1,17 +1,14 @@
 # .github/workflows/grc-gate.yml
 name: grc-gate
-
 on:
   pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  id-token: write       # required for AWS OIDC + Cosign keyless (Lab 4.4)
+  id-token: write
   contents: read
-  pull-requests: write  # required to comment on the PR
-
-
+  pull-requests: write
 
 jobs:
   grc-gate:
@@ -19,24 +16,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Required to see the difference between branches
+          fetch-depth: 0
 
       - name: Detect Changes & Set Working Dir
         id: context
         run: |
-          # 1. Identify which directory changed (.tf files)
-          # This finds the directory of the first modified .tf file
-          CHANGED_DIR=$(git diff --name-only origin/main...HEAD | grep '\.tf$' | head -n 1 | xargs -I {} dirname {} || echo ".")
-          
-          # 2. Set it for the rest of the job
+          # Finds the first directory containing a .tf file that changed
+          CHANGED_DIR=$(git diff --name-only origin/main...HEAD | grep '\.tf$' | head -n 1 | xargs -I {} dirname {} || echo "baselines/aws")
           echo "TF_WORKING_DIR=$CHANGED_DIR" >> $GITHUB_ENV
-          echo "Scanning Lab Directory: $CHANGED_DIR"
+          mkdir -p evidence # Create evidence at the root early
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
