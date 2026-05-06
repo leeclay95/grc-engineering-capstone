@@ -27,15 +27,19 @@ This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant inf
 * **`/modules`**: Reusable, "Compliant-by-Default" infrastructure blueprints.
 * **`/evidence`**: Machine-readable JSON evidence (SGE) used for automated audit verification.
 
-
-### Phase 5: Monitoring & Detection (The Auditor's View)
+### Phase 5: Monitoring & Detection
 
 * **Lab 5.2: Cloud Security Posture Management (CSPM) Baseline**
-    * **SI-4 (Information System Monitoring):** Deployed AWS Security Hub with the **NIST 800-53 Rev 5** standard subscription.
-    * **CM-8 (Information System Component Inventory):** Orchestrated an AWS Config Global Recorder to maintain a near real-time inventory of 50+ resource types.
-    * **AU-2 / AU-12 (Audit Logging):** Configured an immutable multi-region **AWS CloudTrail** integrated with S3 for non-repudiation of management events.
-    * **Root Cause Analysis (RCA):** Successfully troubleshot and remediated an `InsufficientDeliveryPolicyException` by engineering an explicit IAM-to-S3 handshake in the bucket policy.
-    * **Continuous Audit:** Established a "Day 0" findings baseline, identifying a **CRITICAL** deviation in `Config.1` (Identity-based vs Service-Linked Role recording), providing immediate visibility into the account's risk posture.
+    * **SI-4 (Information System Monitoring):** Deployed a dynamic GRC gate using GitHub Actions and OIDC to scan IaC for NIST 800-53 compliance prior to deployment.
+    * **SC-28 (Protection of Information at Rest):** Engineered a Customer-Managed Key (CMK) via **AWS KMS** to provide envelope encryption for CloudTrail logs and Config snapshots.
+    * **AC-3 (Access Enforcement):** Hardened audit storage by implementing `aws_s3_bucket_public_access_block` and explicit bucket policies for the Config Service Principal.
+    * **AU-9 (Audit Storage):** Enabled S3 Versioning and MFA Delete-readiness on all logging buckets to ensure the immutability of the audit trail.
+    * **CI/CD Governance:** Integrated **Cosign** for keyless signing of audit evidence, creating a cryptographically verifiable chain of custody for every infrastructure change.
+
+#### 🛠️ Technical Challenges & Remediation
+* **Remediated "Implicit Deny" on S3:** Troubleshot an `InsufficientDeliveryPolicyException` where the AWS Config Role lacked explicit permissions in the S3 Bucket Policy. Resolved by engineering a specific handshake between the IAM role and the resource-based policy.
+* **Monorepo Path Detection:** Refactored the GitHub Actions `grc-gate` to use dynamic path detection (`git diff`) and absolute workspace pathing (`$GITHUB_WORKSPACE`), allowing the security gate to scale across multiple lab environments.
+* **Namespace Resolution:** Debugged and corrected the Conftest Python parser to handle nested JSON results, ensuring the security gate accurately counts failures across multi-cloud namespaces.
 
 
 ### Phase 4: CI/CD Enforcement & Evidence
