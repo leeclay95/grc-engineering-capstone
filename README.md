@@ -27,6 +27,17 @@ This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant inf
 * **`/modules`**: Reusable, "Compliant-by-Default" infrastructure blueprints.
 * **`/evidence`**: Machine-readable JSON evidence (SGE) used for automated audit verification.
 
+
+### Phase 5: Monitoring & Detection (The Auditor's View)
+
+* **Lab 5.2: Cloud Security Posture Management (CSPM) Baseline**
+    * **SI-4 (Information System Monitoring):** Deployed AWS Security Hub with the **NIST 800-53 Rev 5** standard subscription.
+    * **CM-8 (Information System Component Inventory):** Orchestrated an AWS Config Global Recorder to maintain a near real-time inventory of 50+ resource types.
+    * **AU-2 / AU-12 (Audit Logging):** Configured an immutable multi-region **AWS CloudTrail** integrated with S3 for non-repudiation of management events.
+    * **Root Cause Analysis (RCA):** Successfully troubleshot and remediated an `InsufficientDeliveryPolicyException` by engineering an explicit IAM-to-S3 handshake in the bucket policy.
+    * **Continuous Audit:** Established a "Day 0" findings baseline, identifying a **CRITICAL** deviation in `Config.1` (Identity-based vs Service-Linked Role recording), providing immediate visibility into the account's risk posture.
+
+
 ### Phase 4: CI/CD Enforcement & Evidence
 
 * **Lab 4.4: Evidence Chain of Custody**
