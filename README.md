@@ -27,7 +27,7 @@ This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant inf
 * **`/modules`**: Reusable, "Compliant-by-Default" infrastructure blueprints.
 * **`/evidence`**: Machine-readable JSON evidence (SGE) used for automated audit verification.
 
-### Phase 5: Monitoring & Detection
+### Phase 5: Monitoring & Detection.
 
 * **Lab 5.2: Cloud Security Posture Management (CSPM) Baseline**
     * **SI-4 (Information System Monitoring):** Deployed a dynamic GRC gate using GitHub Actions and OIDC to scan IaC for NIST 800-53 compliance prior to deployment.
