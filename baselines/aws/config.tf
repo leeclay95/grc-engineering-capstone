@@ -91,3 +91,30 @@ resource "aws_s3_bucket_policy" "config" {
   bucket = aws_s3_bucket.config.id
   policy = data.aws_iam_policy_document.config_s3.json
 }
+
+resource "aws_s3_bucket_public_access_block" "config_bucket_access" {
+  bucket = aws_s3_bucket.config.id # Match your bucket resource name
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "config_encryption" {
+  bucket = aws_s3_bucket.config.id 
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.monitoring_key.arn
+    }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "config" {
+  bucket = aws_s3_bucket.config.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
