@@ -1,0 +1,26 @@
+resource "google_project_organization_policy" "uniform_bucket_access" {
+  project    = var.gcp_project
+  constraint = "constraints/storage.uniformBucketLevelAccess"
+
+  boolean_policy {
+    enforced = true
+  }
+}
+
+resource "google_project_organization_policy" "disable_sa_keys" {
+  project    = var.gcp_project
+  constraint = "constraints/iam.disableServiceAccountKeyCreation"
+
+  boolean_policy {
+    enforced = true
+  }
+}
+
+resource "google_project_organization_policy" "require_oslogin" {
+  project    = var.gcp_project
+  constraint = "constraints/compute.requireOsLogin"
+
+  boolean_policy {
+    enforced = true
+  }
+}

@@ -36,6 +36,17 @@ This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant inf
     * **AU-9 (Audit Storage):** Enabled S3 Versioning and MFA Delete-readiness on all logging buckets to ensure the immutability of the audit trail.
     * **CI/CD Governance:** Integrated **Cosign** for keyless signing of audit evidence, creating a cryptographically verifiable chain of custody for every infrastructure change.
 
+
+* **Lab 5.4: GCP Security Services Baseline**
+    * **AC-2 (Account Management):** Eliminated long-lived service account JSON keys by implementing Workload Identity Federation (WIF), utilizing OIDC to exchange GitHub Actions tokens for short-lived, scoped access tokens.
+    * **AU-2 (Event Logging):** Engineered a persistent audit trail by enabling Data Access Logs (`DATA_READ`, `DATA_WRITE`, `ADMIN_READ`) for Cloud Storage, Cloud KMS, and IAM — services where auditing is disabled by default in GCP.
+    * **AC-3 (Access Enforcement):** Established an identity-first security posture, ensuring that service account permissions are restricted to `roles/viewer` for the GRC gate, adhering to the principle of least privilege.
+    * **IA-2 (Identification and Authentication):** Configured a Workload Identity Pool and Provider with strict `attribute_condition` mappings, ensuring only authorized repositories can impersonate the GCP administrative identity.
+    * **Governance Artifacts:** Generated a machine-readable IAM Policy export as formal evidence of logging configuration, satisfying non-repudiation requirements for the Evidence Vault.
+
+
+
+
 #### 🛠️ Technical Challenges & Remediation
 * **Remediated "Implicit Deny" on S3:** Troubleshot an `InsufficientDeliveryPolicyException` where the AWS Config Role lacked explicit permissions in the S3 Bucket Policy. Resolved by engineering a specific handshake between the IAM role and the resource-based policy.
 * **Monorepo Path Detection:** Refactored the GitHub Actions `grc-gate` to use dynamic path detection (`git diff`) and absolute workspace pathing (`$GITHUB_WORKSPACE`), allowing the security gate to scale across multiple lab environments.
