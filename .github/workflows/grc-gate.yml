@@ -64,21 +64,20 @@ jobs:
       - name: Conftest policy gate
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          # Use absolute workspace path for everything
           mkdir -p $GITHUB_WORKSPACE/evidence
           conftest test plan.json --policy $GITHUB_WORKSPACE/policies --output json > $GITHUB_WORKSPACE/evidence/conftest-results.json || true
           
           python3 -c "
-          python3 -c "
           import json, sys, os
           path = '$GITHUB_WORKSPACE/evidence/conftest-results.json'
-          if not os.path.exists(path): print('No evidence'); sys.exit(0)
+          if not os.path.exists(path) or os.stat(path).st_size == 0:
+              print('No evidence found'); sys.exit(0)
           with open(path) as f:
               data = json.load(f)
-              # Flatten results to handle multi-namespace output
+              # Standardize nested conftest output
               results = data if isinstance(data[0], dict) else [item for sublist in data for item in sublist]
               fails = sum(len(r.get('failures') or []) for r in results)
-          print(f'Conftest failures: {fails}')
+          print(f'conftest failures: {fails}')
           sys.exit(0 if fails == 0 else 1)
           "
 
