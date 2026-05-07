@@ -40,3 +40,28 @@ resource "aws_iam_role_policy_attachment" "readonly" {
 }
 
 output "role_arn" { value = aws_iam_role.grc_gate.arn }
+
+##
+
+resource "aws_iam_role_policy" "grc_gate_s3_write" {
+  name = "GRCGateVaultWrite"
+  role = aws_iam_role.grc_gate.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectRetention",
+          "s3:GetEncryptionConfiguration"
+        ]
+        Resource = [
+          "arn:aws:s3:::grc-engineering-capstone-grc-evidence-vault-*",
+          "arn:aws:s3:::grc-engineering-capstone-grc-evidence-vault-*/*"
+        ]
+      }
+    ]
+  })
+}
