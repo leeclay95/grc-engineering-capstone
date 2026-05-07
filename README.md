@@ -33,7 +33,7 @@ This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant inf
 * **Lab 6.1: OSCAL Component Definition & Evidence Chain Traversal**
     * **Audit Automation:** Authored a valid OSCAL Component Definition (`oscal/components/compliant-s3-v1.json`)
       describing the Lab 2.3 `compliant-s3` Terraform module, enabling an assessor to traverse
-      from a control catalog to implementation evidence without human interaction.
+      from a control catalog to implementation evidence without human interaction!
     * **SC-28 (Protection of Information at Rest):** Mapped AES-256 SSE enforcement
       (`aws_s3_bucket_server_side_encryption_configuration`) to a machine-readable
       `implemented-requirement` with a direct `rel=evidence` URI pointing to a signed bundle

@@ -145,4 +145,4 @@ jobs:
             "commit":"${SHA}"
           }
           EOF
-          aws s3 cp receipt.json "s3://${VAULT}/${KEY_PREFIX}/receipt.json"
+          aws s3 cp receipt.json "s3://${VAULT}/${KEY_PREFIX}/receipt.json" 
