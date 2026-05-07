@@ -8,9 +8,23 @@ terraform {
 
 provider "aws" { region = "us-east-1" }
 
-variable "github_org"  { type = string }
-variable "github_repo" { type = string }
+# 1. Variables with Defaults (Combined)
+variable "project_name" {
+  type    = string
+  default = "grc-engineering-capstone"
+}
 
+variable "github_org" {
+  type    = string
+  default = "leeclay95"
+}
+
+variable "github_repo" {
+  type    = string
+  default = "grc-engineering-capstone"
+}
+
+# 2. Resources
 resource "aws_iam_openid_connect_provider" "github" {
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
@@ -39,10 +53,6 @@ resource "aws_iam_role_policy_attachment" "readonly" {
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
-output "role_arn" { value = aws_iam_role.grc_gate.arn }
-
-##
-
 resource "aws_iam_role_policy" "grc_gate_s3_write" {
   name = "GRCGateVaultWrite"
   role = aws_iam_role.grc_gate.id
@@ -66,18 +76,4 @@ resource "aws_iam_role_policy" "grc_gate_s3_write" {
   })
 }
 
-variable "project_name" {
-  type    = string
-  default = "grc-engineering-capstone"
-}
-
-
-variable "github_org" {
-  type    = string
-  default = "leeclay95"
-}
-
-variable "github_repo" {
-  type    = string
-  default = "grc-engineering-capstone"
-}
+output "role_arn" { value = aws_iam_role.grc_gate.arn }
