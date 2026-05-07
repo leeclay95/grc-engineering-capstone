@@ -27,6 +27,32 @@ This portfolio utilizes a modern DevSecOps pipeline to prevent non-compliant inf
 * **`/modules`**: Reusable, "Compliant-by-Default" infrastructure blueprints.
 * **`/evidence`**: Machine-readable JSON evidence (SGE) used for automated audit verification.
 
+
+### Phase 6: OSCAL & Machine-Readable Compliance
+
+* **Lab 6.1: OSCAL Component Definition & Evidence Chain Traversal**
+    * **Audit Automation:** Authored a valid OSCAL Component Definition (`oscal/components/compliant-s3-v1.json`)
+      describing the Lab 2.3 `compliant-s3` Terraform module, enabling an assessor to traverse
+      from a control catalog to implementation evidence without human interaction.
+    * **SC-28 (Protection of Information at Rest):** Mapped AES-256 SSE enforcement
+      (`aws_s3_bucket_server_side_encryption_configuration`) to a machine-readable
+      `implemented-requirement` with a direct `rel=evidence` URI pointing to a signed bundle
+      in the Lab 2.5 vault.
+    * **AC-3 / AU-3 / CM-6:** Documented public-access block, access logging, and mandatory
+      tagging implementations as OSCAL `implemented-requirements`, each linked to cryptographically
+      signed pipeline evidence.
+    * **Profile Authoring:** Built a minimal OSCAL Profile (`oscal/profiles/cge-p-minimum.json`)
+      selecting SC-28, AC-3, AU-3, and CM-6 from the NIST 800-53 Rev 5 catalog, resolved against
+      the live NIST catalog using `compliance-trestle`.
+    * **Toolchain Validation:** Validated both the component definition and profile with
+      `trestle validate`; output captured as `evidence/lab-6-1/trestle-validate.txt`.
+    * **End-to-End Chain:** The OSCAL `links[rel=evidence].href` resolves to a real signed object
+      in the evidence vault; running `verify-evidence.sh` against that URI returns `CHAIN INTACT`,
+      completing a fully traversable compliance graph from control → implementation → signed evidence.
+
+
+
+
 ### Phase 5: Monitoring & Detection.
 
 * **Lab 5.2: Cloud Security Posture Management (CSPM) Baseline**
