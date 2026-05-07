@@ -27,6 +27,7 @@ locals {
 
 resource "aws_s3_bucket" "vault" {
   bucket              = local.vault_name
+  force_destroy       = true
   object_lock_enabled = true        # MUST be set at bucket creation
 }
 
