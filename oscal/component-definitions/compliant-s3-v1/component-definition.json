@@ -1,0 +1,46 @@
+{
+  "component-definition": {
+    "uuid": "9164ce2a-58c6-4ec7-8295-10ef91db0a5e",
+    "metadata": {
+      "title": "compliant-s3 module v1",
+      "last-modified": "2026-05-07T18:00:00Z",
+      "version": "1.0.0",
+      "oscal-version": "1.1.3"
+    },
+    "components": [
+      {
+        "uuid": "4f329971-5582-441d-933e-1f7c468971f1",
+        "type": "software",
+        "title": "compliant-s3",
+        "description": "Terraform module for NIST 800-53 compliant S3 buckets.",
+        "control-implementations": [
+          {
+            "uuid": "49397637-674b-4819-9f79-666336e8b58a",
+            "source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+            "description": "NIST 800-53 Implementation",
+            "implemented-requirements": [
+              {
+                "uuid": "40a5a305-6453-4876-9c4c-783a4f6d3f2b",
+                "control-id": "sc-28",
+                "description": "AES-256 encryption is hardcoded via aws_s3_bucket_server_side_encryption_configuration.",
+                "props": [
+                  {
+                    "name": "implementation-status",
+                    "value": "implemented"
+                  }
+                ],
+                "links": [
+                  {
+                    "rel": "evidence",
+                    "href": "s3://grc-engineering-capstone-grc-evidence-vault-35f37a7d/runs/LATEST/bundle.tar.gz",
+                    "text": "Signed plan showing encryption enabled."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

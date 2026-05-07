@@ -8,9 +8,23 @@ terraform {
 
 provider "aws" { region = "us-east-1" }
 
-variable "github_org"  { type = string }
-variable "github_repo" { type = string }
+# 1. Variables with Defaults (Combined)
+variable "project_name" {
+  type    = string
+  default = "grc-engineering-capstone"
+}
 
+variable "github_org" {
+  type    = string
+  default = "leeclay95"
+}
+
+variable "github_repo" {
+  type    = string
+  default = "grc-engineering-capstone"
+}
+
+# 2. Resources
 resource "aws_iam_openid_connect_provider" "github" {
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
@@ -37,6 +51,29 @@ resource "aws_iam_role" "grc_gate" {
 resource "aws_iam_role_policy_attachment" "readonly" {
   role       = aws_iam_role.grc_gate.name
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy" "grc_gate_s3_write" {
+  name = "GRCGateVaultWrite"
+  role = aws_iam_role.grc_gate.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectRetention",
+          "s3:GetEncryptionConfiguration"
+        ]
+        Resource = [
+          "arn:aws:s3:::grc-engineering-capstone-grc-evidence-vault-35f37a7d",
+          "arn:aws:s3:::grc-engineering-capstone-grc-evidence-vault-35f37a7d/*"
+        ]
+      }
+    ]
+  })
 }
 
 output "role_arn" { value = aws_iam_role.grc_gate.arn }

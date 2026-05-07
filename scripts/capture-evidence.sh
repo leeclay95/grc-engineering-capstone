@@ -43,7 +43,7 @@ mkdir -p "$BUNDLE_DIR"
     || echo "no git commit available" > "$BUNDLE_DIR/commit.txt" )
 terraform version > "$BUNDLE_DIR/version.txt"
 
-# manifest.json: filename, sha256, size, captured_at_utc per file
+# manifest.json
 {
   echo "["
   FIRST=1
@@ -60,13 +60,48 @@ terraform version > "$BUNDLE_DIR/version.txt"
   echo "]"
 } > "$BUNDLE_DIR/manifest.json"
 
-BUNDLE_TGZ="/tmp/bundle-$RUN_ID.tar.gz"
+BUNDLE_TGZ="/tmp/evidence-$RUN_ID.tar.gz"
 ( cd "$WORK" && tar czf "$BUNDLE_TGZ" "bundle-$RUN_ID" )
 
-KEY="runs/$RUN_ID/bundle.tar.gz"
+# --- SHA256 sidecar ---
+SHA256=$($SHASUM "$BUNDLE_TGZ" | awk '{print $1}')
+SHA256_FILE="/tmp/evidence-$RUN_ID.tar.gz.sha256"
+echo "$SHA256" > "$SHA256_FILE"
+
+# --- cosign signing (GitHub Actions OIDC) or local stub ---
+SIG_BUNDLE_FILE="/tmp/evidence-$RUN_ID.tar.gz.sig.bundle"
+if command -v cosign >/dev/null 2>&1 && [[ -n "${COSIGN_EXPERIMENTAL:-}" ]]; then
+  cosign sign-blob \
+    --bundle "$SIG_BUNDLE_FILE" \
+    "$BUNDLE_TGZ"
+else
+  echo '{"stub":true,"reason":"local-run-no-oidc"}' > "$SIG_BUNDLE_FILE"
+fi
+
+KEY="runs/$RUN_ID/evidence-$RUN_ID.tar.gz"
+
+# Upload bundle
 UPLOAD_OUT=$(aws $PROFILE_ARG s3api put-object \
   --bucket "$VAULT" --key "$KEY" --body "$BUNDLE_TGZ" --output json)
 VERSION_ID=$(echo "$UPLOAD_OUT" | awk -F'"' '/"VersionId"/{print $4}')
 
-printf '{"run_id":"%s","vault":"%s","key":"%s","version_id":"%s","captured_at_utc":"%s"}\n' \
-  "$RUN_ID" "$VAULT" "$KEY" "$VERSION_ID" "$CAPTURED_AT"
+# Upload sidecar files
+aws $PROFILE_ARG s3api put-object \
+  --bucket "$VAULT" --key "${KEY}.sha256" \
+  --body "$SHA256_FILE" --output json > /dev/null
+
+aws $PROFILE_ARG s3api put-object \
+  --bucket "$VAULT" --key "${KEY}.sig.bundle" \
+  --body "$SIG_BUNDLE_FILE" --output json > /dev/null
+
+RECEIPT=$(printf '{"run_id":"%s","vault":"%s","key":"%s","version_id":"%s","sha256":"%s","captured_at_utc":"%s"}\n' \
+  "$RUN_ID" "$VAULT" "$KEY" "$VERSION_ID" "$SHA256" "$CAPTURED_AT")
+
+echo "$RECEIPT"
+
+# --- Save local evidence artifact ---
+EVIDENCE_DIR="evidence/lab-6-1"
+mkdir -p "$EVIDENCE_DIR"
+echo "$RECEIPT" > "$EVIDENCE_DIR/receipt-$RUN_ID.json"
+cp "$SHA256_FILE" "$EVIDENCE_DIR/evidence-$RUN_ID.tar.gz.sha256"
+echo "Local evidence written to $EVIDENCE_DIR/"
