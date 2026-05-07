@@ -65,3 +65,19 @@ resource "aws_iam_role_policy" "grc_gate_s3_write" {
     ]
   })
 }
+
+variable "project_name" {
+  type    = string
+  default = "grc-engineering-capstone"
+}
+
+
+variable "github_org" {
+  type    = string
+  default = "leeclay95"
+}
+
+variable "github_repo" {
+  type    = string
+  default = "grc-engineering-capstone"
+}
