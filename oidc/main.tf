@@ -58,7 +58,8 @@ resource "aws_iam_role_policy" "grc_gate_s3_write" {
           "s3:GetEncryptionConfiguration"
         ]
         Resource = [
-          "arn:aws:s3:::grc-engineering-capstone-grc-evidence-vault-35f37a7d"
+          "arn:aws:s3:::grc-engineering-capstone-grc-evidence-vault-35f37a7d",
+          "arn:aws:s3:::grc-engineering-capstone-grc-evidence-vault-35f37a7d/*"
         ]
       }
     ]
